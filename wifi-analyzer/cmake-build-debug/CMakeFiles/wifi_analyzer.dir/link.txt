@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/wifi_analyzer.dir/main.cpp.o  -o wifi_analyzer 
