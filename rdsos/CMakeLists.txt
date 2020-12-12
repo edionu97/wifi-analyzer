@@ -12,8 +12,10 @@ add_executable(
         utils/wifi_analyzer/sources/wifi_helpers.cpp
         utils/wifi_analyzer/headers/wifi_helpers.h
         resources/resources_manager/sources/resources_manager.cpp
-        resources/resources_manager/headers/resources_manager.h)
+        resources/resources_manager/headers/resources_manager.h
+        analyzer/sources/wifi_analyzer.cpp
+        analyzer/headers/wifi_analyzer.h analyzer/scan_result/wireless_scan_result.cpp analyzer/scan_result/wireless_scan_result.h)
 
-include_directories("/usr/include/iwlib.h")
+include_directories("/usr/include/")
 target_link_libraries(rdsos "/usr/lib/x86_64-linux-gnu/libiw.so")
 target_link_libraries(rdsos "/usr/lib/x86_64-linux-gnu/libiw.a")
