@@ -6,6 +6,7 @@
 #include <boost/format.hpp>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <boost/lexical_cast.hpp>
 
 wireless_scan_result
 wireless_scan_result::complete_scan_result(const wireless_scan &scan_result,
@@ -51,12 +52,6 @@ wireless_scan_result::complete_scan_result(const wireless_scan &scan_result,
         wifi_result.quality = scan_result.stats.qual.qual;
     }
 
-    //
-    if (wifi_result.quality.has_value())
-    {
-
-    }
-
     //set the max quality
     if (scan_result.has_stats)
     {
@@ -67,7 +62,8 @@ wireless_scan_result::complete_scan_result(const wireless_scan &scan_result,
     //get the frequency
     if (scan_result.b.has_freq)
     {
-        wifi_result.frequency = (boost::format("%.10g Ghz") % (scan_result.b.freq / 1000000000)).str();
+        wifi_result.frequency = boost::lexical_cast<double>(
+                (boost::format("%.10g") % (scan_result.b.freq / 1000000000)).str());
     }
 
     //get the channel
@@ -79,7 +75,7 @@ wireless_scan_result::complete_scan_result(const wireless_scan &scan_result,
     //set the signal level
     if (scan_result.has_stats)
     {
-        wifi_result.signal = std::to_string((int8_t) scan_result.stats.qual.level) + " dBm";
+        wifi_result.signal = std::to_string((int8_t) scan_result.stats.qual.level);
     }
 
     //set the manufacturer
@@ -106,85 +102,4 @@ wireless_scan_result::complete_scan_result(const wireless_scan &scan_result,
     }
 
     return wifi_result;
-}
-
-
-//std::optional<std::string> mode{};
-std::string wireless_scan_result::as_json(const wireless_scan_result &result, bool pretty_print)
-{
-    //convert the object
-    auto converted_object = nlohmann::json{};
-
-    //the ssid
-    if (result.ssid.has_value())
-    {
-        converted_object["ssid"] = result.ssid.value();
-    }
-
-    //the mac adress
-    if (result.mac_address.has_value())
-    {
-        converted_object["macAddress"] = result.mac_address.value();
-    }
-
-    // the quality
-    if (result.quality.has_value())
-    {
-        converted_object["quality"] = result.quality.value();
-    }
-
-    //the max_quality
-    if (result.max_quality.has_value())
-    {
-        converted_object["maxQuality"] = result.max_quality.value();
-    }
-
-    //the freq
-    if (result.frequency.has_value())
-    {
-        converted_object["frequency"] = result.frequency.value();
-    }
-
-    //the channel
-    if (result.channel.has_value())
-    {
-        converted_object["channel"] = result.channel.value();
-    }
-
-    //the signal
-    if (result.signal.has_value())
-    {
-        converted_object["signal"] = result.signal.value();
-    }
-
-    //the manufacturer
-    if (result.manufacturer.has_value())
-    {
-        converted_object["manufacturer"] = result.manufacturer.value();
-    }
-
-    //the mode
-    if (result.mode.has_value())
-    {
-        converted_object["mode"] = result.mode.value();
-    }
-
-    //the encryption
-    if (result.encryption.has_value())
-    {
-        const auto encryption = result.encryption.value();
-
-        if (encryption.has_encryption.has_value())
-        {
-            converted_object["encryption"]["isEncrypted"] = encryption.has_encryption.value();
-        }
-
-        if (encryption.encryption_type.has_value())
-        {
-            converted_object["encryption"]["encryption"] = encryption.encryption_type.value();
-        }
-    }
-
-    //convert the json into string
-    return converted_object.dump(pretty_print ? 4 : -1);
 }
