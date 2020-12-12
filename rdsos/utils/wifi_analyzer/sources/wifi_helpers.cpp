@@ -84,5 +84,3 @@ wifi::wifi_helpers::get_encryption_information(const std::string &interface_name
 
     return mac_address_info;
 }
-
-

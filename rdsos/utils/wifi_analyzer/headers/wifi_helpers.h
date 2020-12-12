@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <nlohmann/json.hpp>
 
 namespace wifi
 {

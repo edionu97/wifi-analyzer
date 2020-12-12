@@ -5,6 +5,7 @@
 #include "wireless_scan_result.h"
 #include <boost/format.hpp>
 #include <iostream>
+#include <nlohmann/json.hpp>
 
 wireless_scan_result
 wireless_scan_result::complete_scan_result(const wireless_scan &scan_result,
@@ -105,4 +106,85 @@ wireless_scan_result::complete_scan_result(const wireless_scan &scan_result,
     }
 
     return wifi_result;
+}
+
+
+//std::optional<std::string> mode{};
+std::string wireless_scan_result::as_json(const wireless_scan_result &result, bool pretty_print)
+{
+    //convert the object
+    auto converted_object = nlohmann::json{};
+
+    //the ssid
+    if (result.ssid.has_value())
+    {
+        converted_object["ssid"] = result.ssid.value();
+    }
+
+    //the mac adress
+    if (result.mac_address.has_value())
+    {
+        converted_object["macAddress"] = result.mac_address.value();
+    }
+
+    // the quality
+    if (result.quality.has_value())
+    {
+        converted_object["quality"] = result.quality.value();
+    }
+
+    //the max_quality
+    if (result.max_quality.has_value())
+    {
+        converted_object["maxQuality"] = result.max_quality.value();
+    }
+
+    //the freq
+    if (result.frequency.has_value())
+    {
+        converted_object["frequency"] = result.frequency.value();
+    }
+
+    //the channel
+    if (result.channel.has_value())
+    {
+        converted_object["channel"] = result.channel.value();
+    }
+
+    //the signal
+    if (result.signal.has_value())
+    {
+        converted_object["signal"] = result.signal.value();
+    }
+
+    //the manufacturer
+    if (result.manufacturer.has_value())
+    {
+        converted_object["manufacturer"] = result.manufacturer.value();
+    }
+
+    //the mode
+    if (result.mode.has_value())
+    {
+        converted_object["mode"] = result.mode.value();
+    }
+
+    //the encryption
+    if (result.encryption.has_value())
+    {
+        const auto encryption = result.encryption.value();
+
+        if (encryption.has_encryption.has_value())
+        {
+            converted_object["encryption"]["isEncrypted"] = encryption.has_encryption.value();
+        }
+
+        if (encryption.encryption_type.has_value())
+        {
+            converted_object["encryption"]["encryption"] = encryption.encryption_type.value();
+        }
+    }
+
+    //convert the json into string
+    return converted_object.dump(pretty_print ? 4 : -1);
 }

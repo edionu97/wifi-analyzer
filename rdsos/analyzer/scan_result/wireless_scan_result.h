@@ -55,8 +55,15 @@ struct wireless_scan_result
                                                      const resources_manager &manager,
                                                      const std::map<std::string, wifi::encryption_information> &wifi_encryption_info);
 
-private:
+    /**
+     * This function it is used for converting an instance of object into a json
+     * @param result: the object that will be converted
+     * @param pretty_print: if true the output will be formatted otherwise not
+     * @return the string representation of the object
+     */
+    static std::string as_json(const wireless_scan_result &result, bool pretty_print = false);
 
+private:
     wireless_scan_result() = default;
 };
 

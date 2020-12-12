@@ -8,6 +8,9 @@
 
 ws_broadcast_server::ws_broadcast_server()
 {
+    //stop the logging from the frame_header and the frame_payload
+    asio_server_.clear_access_channels(websocketpp::log::alevel::frame_header | websocketpp::log::alevel::frame_payload);
+
     //init the asio
     asio_server_.init_asio();
 
