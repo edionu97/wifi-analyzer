@@ -106,5 +106,5 @@ int main()
 
     wifi_analyzer analyzer{"wlp0s20f3", manager, on_results_callback};
 
-    analyzer.start_scanning();
+    analyzer.start_scanning_async();
 }

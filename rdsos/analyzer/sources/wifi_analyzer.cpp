@@ -15,52 +15,58 @@
 #pragma ide diagnostic ignored "EndlessLoop"
 
 void
-wifi_analyzer::start_scanning() const
+wifi_analyzer::start_scanning_async()
 {
-    try
+    //launch another thread for executing the starting code
+    futures_.push_back(std::async(std::launch::async, [&]()
     {
-        while (true)
+        try
         {
-            std::vector<wireless_scan_result> results{};
-
-            //get the encryption information
-            const auto encryption_information = wifi::wifi_helpers::get_encryption_information(interface_name_);
-
-            /* Perform the scan */
-            wireless_scan_head head{};
-            if (iw_scan(kernel_socket_.value(),
-                        const_cast<char *>(interface_name_.c_str()),
-                        range_metadata_.we_version_compiled, &head) < 0)
+            while (true)
             {
-                throw std::runtime_error("Error while scanning the interface, aborting...");
+                std::vector<wireless_scan_result> results{};
+
+                //get the encryption information
+                const auto encryption_information = wifi::wifi_helpers::get_encryption_information(interface_name_);
+
+                /* Perform the scan */
+                wireless_scan_head head{};
+                if (iw_scan(kernel_socket_.value(),
+                            const_cast<char *>(interface_name_.c_str()),
+                            range_metadata_.we_version_compiled, &head) < 0)
+                {
+                    throw std::runtime_error("Error while scanning the interface, aborting...");
+                }
+
+                //get a pointer to the wifi info structure
+                std::shared_ptr<wireless_scan> wifi_result(head.result);
+                while (wifi_result != nullptr)
+                {
+                    //get the wireless information
+                    const auto wireless_information = wireless_scan_result::complete_scan_result(*wifi_result,
+                                                                                                 range_metadata_,
+                                                                                                 resources_manager_,
+                                                                                                 encryption_information);
+                    //add the results in the configuration
+                    results.push_back(wireless_information);
+
+
+                    //move to next result and deallocate the previous node
+                    wifi_result = std::shared_ptr<wireless_scan>(wifi_result->next);
+                }
+
+                //call the callback
+                on_results_callback_(results);
+
+                //sleep 1 second
+                sleep(1);
             }
 
-            //get a pointer to the wifi info structure
-            std::shared_ptr<wireless_scan> wifi_result(head.result);
-            while (wifi_result != nullptr)
-            {
-                //get the wireless information
-                const auto wireless_information = wireless_scan_result::complete_scan_result(*wifi_result,
-                                                                                             range_metadata_,
-                                                                                             resources_manager_,
-                                                                                             encryption_information);
-                //add the results in the configuration
-                results.push_back(wireless_information);
-
-
-                //move to next result and deallocate the previous node
-                wifi_result = std::shared_ptr<wireless_scan>(wifi_result->next);
-            }
-
-            //call the callback
-            on_results_callback_(results);
-            return;
+        } catch (const std::exception &e)
+        {
+            std::cout << e.what() << '\n';
         }
-    } catch (const std::exception &e)
-    {
-        std::cout << e.what() << '\n';
-    }
-
+    }));
 }
 
 wifi_analyzer::wifi_analyzer(
@@ -86,6 +92,12 @@ wifi_analyzer::wifi_analyzer(
 
 wifi_analyzer::~wifi_analyzer()
 {
+    //wait for all futures to complete
+    for(const auto& future: futures_)
+    {
+        future.wait();
+    }
+
     //if the socket was not instantiated do nothing
     if (!kernel_socket_.has_value())
     {

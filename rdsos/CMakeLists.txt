@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.17)
 project(rdsos)
 
+
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS -pthread)
 
 add_executable(
         rdsos main.cpp
@@ -19,3 +21,4 @@ add_executable(
 include_directories("/usr/include/")
 target_link_libraries(rdsos "/usr/lib/x86_64-linux-gnu/libiw.so")
 target_link_libraries(rdsos "/usr/lib/x86_64-linux-gnu/libiw.a")
+

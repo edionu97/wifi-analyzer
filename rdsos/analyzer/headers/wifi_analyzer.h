@@ -13,6 +13,7 @@
 #include <iwlib.h>
 #include <optional>
 #include <functional>
+#include <future>
 
 
 class wifi_analyzer
@@ -30,7 +31,7 @@ public:
     /**
      * This method starts scanning the interface name
      */
-    void start_scanning() const;
+    void start_scanning_async();
 
     /**
      * Destructor of the class
@@ -44,6 +45,7 @@ private:
 
     iwrange range_metadata_{};
     std::optional<int> kernel_socket_{};
+    std::vector<std::future<void>> futures_{};
 };
 
 
