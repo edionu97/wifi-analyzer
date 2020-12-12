@@ -41,12 +41,6 @@ public:
     void broadcast_message(const std::string& message);
 
     /**
-     * Runs the server on another thread
-     * @param run_on_port : the port on which the server will run
-     */
-    void run_async(unsigned run_on_port);
-
-    /**
      * The destructor
      */
     ~ws_broadcast_server();

@@ -19,7 +19,7 @@ ws_broadcast_server::ws_broadcast_server()
 
 void ws_broadcast_server::run(unsigned run_on_port)
 {
-    std::cout << boost::format("Starting the server on localhost: %d...\n") % run_on_port;
+    std::cout << boost::format("Starting the server on localhost: %d\n") % run_on_port;
 
     // Listen on port 9002
     asio_server_.listen(run_on_port);
@@ -91,14 +91,6 @@ void ws_broadcast_server::broadcast_message(const std::string &message)
             }
         }
     }
-}
-
-void ws_broadcast_server::run_async(unsigned int run_on_port)
-{
-    child_processes_.push_back(std::async(std::launch::async, [&]()
-    {
-        run(run_on_port);
-    }));
 }
 
 ws_broadcast_server::~ws_broadcast_server()
