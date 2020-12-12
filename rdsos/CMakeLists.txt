@@ -16,7 +16,11 @@ add_executable(
         resources/resources_manager/sources/resources_manager.cpp
         resources/resources_manager/headers/resources_manager.h
         analyzer/sources/wifi_analyzer.cpp
-        analyzer/headers/wifi_analyzer.h analyzer/scan_result/wireless_scan_result.cpp analyzer/scan_result/wireless_scan_result.h)
+        analyzer/headers/wifi_analyzer.h
+        analyzer/scan_result/wireless_scan_result.cpp
+        analyzer/scan_result/wireless_scan_result.h
+        server/sources/ws_broadcast_server.cpp
+        server/headers/ws_broadcast_server.h)
 
 include_directories("/usr/include/")
 target_link_libraries(rdsos "/usr/lib/x86_64-linux-gnu/libiw.so")

@@ -12,6 +12,7 @@
 #include "resources/resources_manager/headers/resources_manager.h"
 #include "analyzer/headers/wifi_analyzer.h"
 #include "analyzer/scan_result/wireless_scan_result.h"
+#include "server/headers/ws_broadcast_server.h"
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -92,19 +93,25 @@ std::ostream &operator<<(std::ostream &out, const wireless_scan_result &informat
 //iwlist interface scan
 int main()
 {
-    const auto manager = resources_manager();
+//    const auto manager = resources_manager();
+//
+//    auto on_results_callback = [](const std::vector<wireless_scan_result> &a) -> void
+//    {
+//        for (const auto &result : a)
+//        {
+//            std::cout << result << '\n';
+//        }
+//
+//        std::cout << '\n';
+//    };
+//
+//    wifi_analyzer analyzer{"wlp0s20f3", manager, on_results_callback};
+//
+//    analyzer.start_scanning_async();
 
-    auto on_results_callback = [](const std::vector<wireless_scan_result> &a) -> void
-    {
-        for (const auto &result : a)
-        {
-            std::cout << result << '\n';
-        }
+    ws_broadcast_server s{};
 
-        std::cout << '\n';
-    };
+    s.run_async(9002);
 
-    wifi_analyzer analyzer{"wlp0s20f3", manager, on_results_callback};
-
-    analyzer.start_scanning_async();
+    std::cout << "da" << '\n';
 }
