@@ -15,6 +15,8 @@
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
 
+#include <functional>
+
 std::ostream &operator<<(std::ostream &out, const wifi::encryption_information &information)
 {
     if (information.has_encryption.has_value())
@@ -45,7 +47,7 @@ std::ostream &operator<<(std::ostream &out, const wireless_scan_result &informat
         out << "MAC address: " << information.mac_address.value() << '\n';
     }
 
-    if(information.manufacturer.has_value())
+    if (information.manufacturer.has_value())
     {
         out << "Manufacturer: " << information.manufacturer.value() << '\n';
     }
@@ -68,17 +70,17 @@ std::ostream &operator<<(std::ostream &out, const wireless_scan_result &informat
         out << boost::format("Channel: %s\n") % information.channel.value();
     }
 
-    if(information.signal.has_value())
+    if (information.signal.has_value())
     {
-        out << boost::format ("Signal: %s\n") % information.signal.value();
+        out << boost::format("Signal: %s\n") % information.signal.value();
     }
 
-    if(information.mode.has_value())
+    if (information.mode.has_value())
     {
-        out << boost::format ("Mode: %s\n") % information.mode.value();
+        out << boost::format("Mode: %s\n") % information.mode.value();
     }
 
-    if(information.encryption.has_value())
+    if (information.encryption.has_value())
     {
         out << information.encryption.value() << '\n';
     }
@@ -90,54 +92,19 @@ std::ostream &operator<<(std::ostream &out, const wireless_scan_result &informat
 //iwlist interface scan
 int main()
 {
-//    wifi_analyzer a{"wlp0s20f3"};
-//
-//    a.start_scanning();
-
-
-    wireless_scan_head head;
-    wireless_scan *result;
-    iwrange range;
-    int sock;
-
-    /* Open socket to kernel */
-    sock = iw_sockets_open();
-
     const auto manager = resources_manager();
 
-    while (true)
+    auto on_results_callback = [](const std::vector<wireless_scan_result> &a) -> void
     {
-        std::string wlan_name{"wlp0s20f3"};
-        const auto encryption_information = wifi::wifi_helpers::get_encryption_information("wlp0s20f3");
-
-        /* Get some metadata to use for scanning */
-        if (iw_get_range_info(sock, wlan_name.c_str(), &range) < 0)
+        for (const auto &result : a)
         {
-            printf("Error during iw_get_range_info. Aborting.\n");
-            exit(2);
+            std::cout << result << '\n';
         }
 
-        /* Perform the scan */
-        if (iw_scan(sock, const_cast<char *>(wlan_name.c_str()), range.we_version_compiled, &head) < 0)
-        {
-            printf("Error during iw_scan. Aborting.\n");
-            exit(2);
-        }
+        std::cout << '\n';
+    };
 
-        /* Traverse the results */
-        result = head.result;
-        while (nullptr != result)
-        {
-            auto b = wireless_scan_result::complete_scan_result(*result, range, manager, encryption_information);
+    wifi_analyzer analyzer{"wlp0s20f3", manager, on_results_callback};
 
-            std::cout << b << "\n\n";
-
-            result = result->next;
-        }
-
-        return 0;
-
-        sleep(1);
-    }
-
+    analyzer.start_scanning();
 }
