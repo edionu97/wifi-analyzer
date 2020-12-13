@@ -5,6 +5,9 @@ project(rdsos)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS -pthread)
 
+include(FindPCAP.cmake)
+include_directories("/usr/include/")
+
 add_executable(
         rdsos main.cpp
         utils/command_runner/headers/cmd_runner.h
@@ -20,9 +23,10 @@ add_executable(
         analyzer/scan_result/wireless_scan_result.cpp
         analyzer/scan_result/wireless_scan_result.h
         server/sources/ws_broadcast_server.cpp
-        server/headers/ws_broadcast_server.h)
+        server/headers/ws_broadcast_server.h
+        ${SOURCE_FILES})
 
-include_directories("/usr/include/")
+target_link_libraries(rdsos ${PCAP_LIBRARY})
 target_link_libraries(rdsos "/usr/lib/x86_64-linux-gnu/libiw.so")
 target_link_libraries(rdsos "/usr/lib/x86_64-linux-gnu/libiw.a")
 
