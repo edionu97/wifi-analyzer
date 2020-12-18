@@ -5,7 +5,7 @@ based on iwlib library and developed on Ubuntu 20.04 LTS
 
 Instalation
 
-//install node js and enaure that you have the 15.4.0 version installed
+//install node js and ensure that you have the 15.4.0 version installed
 sudo apt-get install nodejs
 
 //ensure that you have C++17 installed
@@ -17,6 +17,6 @@ sudo apt-get install libboost-all-dev
 sudo apt-get install libwebsocketpp-dev
 
 And after that build the solution and run the server.
-Run in the clinet folder the npm install, npm start commands.
+Run in the clinet folder the npm install, npm start commands..
 
 
